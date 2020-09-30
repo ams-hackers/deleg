@@ -280,6 +280,7 @@ export default function App() {
               autoFocus
               ref={inputRef}
               keyboardType="numeric"
+              returnKeyType="done"
               onSubmitEditing={(ev) => {
                 pushLiteral(parseFloat(ev.nativeEvent.text));
                 inputRef.current?.clear();
