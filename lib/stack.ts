@@ -77,3 +77,22 @@ export function executeWord(state: State, word: Word): State {
 export function execute(state: State, words: Quotation): State {
   return words.reduce(executeWord, state);
 }
+
+// utils
+export const sym = (name: string): Sym => ({ name });
+
+const showValue = (value: Value): string =>
+  typeof value === "number"
+    ? `${value}`
+    : value instanceof Array
+    ? `{...}`
+    : `\\${value.name}`;
+
+export const showStack = (state: State) =>
+  console.log(
+    `<${state.stack.length}> ${state.stack
+      .slice()
+      .reverse()
+      .map(showValue)
+      .join(" ")}`
+  );
