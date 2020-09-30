@@ -1,10 +1,13 @@
-export type Sym = { name: string };
-export type Word = number | string | Sym | Quotation;
-export type Quotation = Array<Word>;
-
-export type Value = number | Sym | Quotation;
+export type Value = any;
 export type Stack = Array<Value>;
-export type Dictionary = { [name: string]: Quotation };
+export type Quotation = { type: "quotation"; body: Array<Word> };
+
+export type Name = { type: "name"; name: string };
+export type Literal = { type: "literal"; value: Value };
+export type Word = Literal | Name;
+
+type PrimitiveFunction = (state: State) => State;
+export type Dictionary = { [name: string]: Quotation | PrimitiveFunction };
 export type State = {
   stack: Stack;
   dictionary: Dictionary;
@@ -30,11 +33,11 @@ const def = (state: State): State => {
   const name = state.stack[1];
   const body = state.stack[0];
 
-  if (typeof name !== "object" || name instanceof Array) {
+  if (typeof name !== "object" || typeof name.name === "undefined") {
     throw new Error(`Expected symbol for definition name: ${name}`);
   }
 
-  if (!(body instanceof Array)) {
+  if (typeof body !== "object" || body.type !== "quotation") {
     throw new Error(`Expected quotation for definition body: ${body}`);
   }
 
@@ -48,8 +51,7 @@ const def = (state: State): State => {
   };
 };
 
-type PrimitiveFunction = (state: State) => State;
-const primitives: { [word: string]: PrimitiveFunction } = {
+export const prelude: Dictionary = {
   swap,
   dup,
   drop,
@@ -63,29 +65,30 @@ const push = (value: Value, state: State): State => ({
 });
 
 export function executeWord(state: State, word: Word): State {
-  if (typeof word === "number" || typeof word === "object") {
-    return push(word, state);
-  } else if (word in state.dictionary) {
-    return execute(state, state.dictionary[word]);
-  } else if (word in primitives) {
-    return primitives[word](state);
+  if (word.type === "literal") {
+    return push(word.value, state);
+  } else if (word.name in state.dictionary) {
+    const def = state.dictionary[word.name];
+    if (def instanceof Function) {
+      return def(state);
+    } else {
+      return executeQuotation(state, def);
+    }
   } else {
     throw new Error(`Unknown word: ${word}`);
   }
 }
 
-export function execute(state: State, words: Quotation): State {
-  return words.reduce(executeWord, state);
+export function executeQuotation(state: State, words: Quotation): State {
+  return words.body.reduce(executeWord, state);
 }
 
-// utils
-export const sym = (name: string): Sym => ({ name });
-
+//  utils
 const showValue = (value: Value): string =>
   typeof value === "number"
     ? `${value}`
     : value instanceof Array
-    ? `{...}`
+    ? `[...]`
     : `\\${value.name}`;
 
 export const showStack = (state: State) =>

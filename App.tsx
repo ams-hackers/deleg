@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { useDeleg } from "./useDeleg";
-import { Word } from "./lib/deleg";
 
 // Must match the app.json androidNavigationBar's background color.
 const KEYPAD_BACKGROUND_COLOR = "#78b9ff";
@@ -60,10 +59,10 @@ const Layout: React.FC<LayoutProps> = ({ display, keypad, style }) => {
 
 interface KeypadProps {
   onEnteringMode: () => void;
-  execute: (word: Word) => void;
+  executeName: (name: string) => void;
 }
 
-const Keypad: React.FC<KeypadProps> = ({ onEnteringMode, execute }) => {
+const Keypad: React.FC<KeypadProps> = ({ onEnteringMode, executeName }) => {
   return (
     <View
       style={{
@@ -75,19 +74,19 @@ const Keypad: React.FC<KeypadProps> = ({ onEnteringMode, execute }) => {
       <Op
         title="DUP"
         onPress={() => {
-          execute("dup");
+          executeName("dup");
         }}
       />
       <Op
         title="SWAP"
         onPress={() => {
-          execute("swap");
+          executeName("swap");
         }}
       />
       <Op
         title="DROP"
         onPress={() => {
-          execute("drop");
+          executeName("drop");
         }}
       />
       <Op title="NUM" onPress={onEnteringMode} />
@@ -110,7 +109,7 @@ const Keypad: React.FC<KeypadProps> = ({ onEnteringMode, execute }) => {
 
 export default function App() {
   const [enteringMode, setEnteringMode] = useState(false);
-  const { stack, execute } = useDeleg();
+  const { stack, executeName, pushLiteral } = useDeleg();
 
   console.log(stack);
 
@@ -132,7 +131,7 @@ export default function App() {
             >
               <Keypad
                 onEnteringMode={() => setEnteringMode(true)}
-                execute={execute}
+                executeName={executeName}
               />
             </SafeAreaView>
           }
@@ -154,7 +153,7 @@ export default function App() {
               ref={inputRef}
               keyboardType="numeric"
               onSubmitEditing={(ev) => {
-                execute(parseFloat(ev.nativeEvent.text));
+                pushLiteral(parseFloat(ev.nativeEvent.text));
                 inputRef.current?.clear();
                 setEnteringMode(false);
               }}
