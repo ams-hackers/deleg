@@ -3,7 +3,7 @@ import {
   View,
   ViewStyle,
   Text,
-  TouchableNativeFeedback,
+  Pressable,
   StyleSheet,
   StyleProp,
 } from "react-native";
@@ -16,19 +16,18 @@ export interface ButtonProps {
 
 export const Button: React.FC<ButtonProps> = ({ title, style, onPress }) => {
   return (
-    <TouchableNativeFeedback
-      onPress={onPress}
-      style={{ borderWidth: 0, flexGrow: 1 }}
-    >
-      <View style={[styles.button, style]}>
+    <Pressable onPress={onPress} style={[styles.button, style]}>
+      <View>
         <Text style={styles.buttonText}>{title}</Text>
       </View>
-    </TouchableNativeFeedback>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
+    borderWidth: 0,
+    flexGrow: 1,
     backgroundColor: "#0053ab",
     flexDirection: "row",
     justifyContent: "center",

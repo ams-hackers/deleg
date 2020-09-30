@@ -21,7 +21,7 @@ function Display() {
   return (
     <View style={{ width: "100%", aspectRatio: 1 }}>
       <Svg
-        preserveAspectRatio="1"
+        preserveAspectRatio="xMidYMid meet"
         height="100%"
         width="100%"
         style={{ backgroundColor: "lightblue" }}
