@@ -14,11 +14,11 @@ const KEYPAD_BACKGROUND_COLOR = "#78b9ff";
 
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
-import { Svg, Rect, Circle, Path } from "react-native-svg";
+import { Svg, Circle } from "react-native-svg";
 
 import { Button, ButtonProps } from "./components/Button";
 
-function Display() {
+function Display({ stack }: { stack: Array<any> }) {
   return (
     <View style={{ width: "100%", aspectRatio: 1 }}>
       <Svg
@@ -26,13 +26,25 @@ function Display() {
         height="100%"
         width="100%"
         style={{ backgroundColor: "lightblue" }}
-        viewBox="0 0 100 100"
+        viewBox="-100 -100 200 200"
       >
+        {/*
         <Rect x="0" y="0" width="100" height="100" fill="#bbb" />
         <Circle cx="50" cy="50" r="30" fill="yellow" />
         <Circle cx="40" cy="40" r="4" fill="black" />
         <Circle cx="60" cy="40" r="4" fill="black" />
         <Path d="M 40 60 A 10 10 0 0 0 60 60" stroke="black" />
+        */}
+
+        {React.Children.map(
+          stack
+            .slice(0)
+            .reverse()
+            .filter((value) => React.isValidElement(value)),
+          (elem, ix) => (
+            <React.Fragment key={ix}>{elem}</React.Fragment>
+          )
+        )}
       </Svg>
     </View>
   );
@@ -60,9 +72,14 @@ const Layout: React.FC<LayoutProps> = ({ display, keypad, style }) => {
 interface KeypadProps {
   onEnteringMode: () => void;
   executeName: (name: string) => void;
+  pushLiteral: (value: any) => void;
 }
 
-const Keypad: React.FC<KeypadProps> = ({ onEnteringMode, executeName }) => {
+const Keypad: React.FC<KeypadProps> = ({
+  onEnteringMode,
+  executeName,
+  pushLiteral,
+}) => {
   return (
     <View
       style={{
@@ -90,7 +107,14 @@ const Keypad: React.FC<KeypadProps> = ({ onEnteringMode, executeName }) => {
         }}
       />
       <Op title="NUM" onPress={onEnteringMode} />
-      <Op title="+" onPress={() => {}} />
+      <Op
+        title="Circle"
+        onPress={() => {
+          pushLiteral(
+            <Circle cx="0" cy="0" r="10" fill="red" stroke="white" />
+          );
+        }}
+      />
       <Op title="*" onPress={() => {}} />
       <Op title="-" onPress={() => {}} />
       <Op title="/" onPress={() => {}} />
@@ -120,7 +144,7 @@ export default function App() {
       <View style={{ flex: 1 }}>
         <Layout
           style={{ flex: 1 }}
-          display={<Display />}
+          display={<Display stack={stack} />}
           keypad={
             <SafeAreaView
               style={{
@@ -132,6 +156,7 @@ export default function App() {
               <Keypad
                 onEnteringMode={() => setEnteringMode(true)}
                 executeName={executeName}
+                pushLiteral={pushLiteral}
               />
             </SafeAreaView>
           }
