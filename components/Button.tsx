@@ -12,11 +12,21 @@ export interface ButtonProps {
   title: string;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
+  onLongPress?: () => void;
 }
 
-export const Button: React.FC<ButtonProps> = ({ title, style, onPress }) => {
+export const Button: React.FC<ButtonProps> = ({
+  title,
+  style,
+  onPress,
+  onLongPress,
+}) => {
   return (
-    <Pressable onPress={onPress} style={[styles.button, style]}>
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      style={[styles.button, style]}
+    >
       <View>
         <Text style={styles.buttonText}>{title}</Text>
       </View>

@@ -15,7 +15,7 @@ const KEYPAD_BACKGROUND_COLOR = "#78b9ff";
 
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
-import { Svg, Rect, Circle, Path, G } from "react-native-svg";
+import { Svg, Circle, G } from "react-native-svg";
 
 import { Button, ButtonProps } from "./components/Button";
 
@@ -76,6 +76,9 @@ const initialState: State = {
   dictionary: {
     ...prelude,
     scale,
+    F1: { type: "quotation", body: [] },
+    F2: { type: "quotation", body: [] },
+    F3: { type: "quotation", body: [] },
   },
 };
 
@@ -102,12 +105,18 @@ interface KeypadProps {
   onEnteringMode: () => void;
   executeName: (name: string) => void;
   pushLiteral: (value: any) => void;
+  isRecording: boolean;
+  startRecording: () => void;
+  stopRecording: () => void;
 }
 
 const Keypad: React.FC<KeypadProps> = ({
   onEnteringMode,
   executeName,
   pushLiteral,
+  isRecording,
+  startRecording,
+  stopRecording,
 }) => {
   return (
     <View
@@ -155,10 +164,43 @@ const Keypad: React.FC<KeypadProps> = ({
       <Op title="NEG" onPress={() => {}} />
       <Op title="C" onPress={() => {}} />
       <Op title="RND" onPress={() => {}} />
-      <Op title="√" onPress={() => {}} />
-      <Op title="1/x" onPress={() => {}} />
-      <Op title="π" onPress={() => {}} />
-      <Op title="e" onPress={() => {}} />
+      <Op
+        title={isRecording ? "✅" : "⏺"}
+        onPress={isRecording ? stopRecording : startRecording}
+      />
+      <Op
+        title="F1"
+        onPress={() => {
+          executeName("F1");
+        }}
+        onLongPress={() => {
+          pushLiteral({ type: "name", name: "F1" });
+          executeName("swap");
+          executeName("def");
+        }}
+      />
+      <Op
+        title="F2"
+        onPress={() => {
+          executeName("F2");
+        }}
+        onLongPress={() => {
+          pushLiteral({ type: "name", name: "F2" });
+          executeName("swap");
+          executeName("def");
+        }}
+      />
+      <Op
+        title="F3"
+        onPress={() => {
+          executeName("F3");
+        }}
+        onLongPress={() => {
+          pushLiteral({ type: "name", name: "F3" });
+          executeName("swap");
+          executeName("def");
+        }}
+      />
       <Op title="UNDO" onPress={() => {}} />
       <Op title="REDO" onPress={() => {}} />
     </View>
@@ -167,7 +209,14 @@ const Keypad: React.FC<KeypadProps> = ({
 
 export default function App() {
   const [enteringMode, setEnteringMode] = useState(false);
-  const { stack, executeName, pushLiteral } = useDeleg(initialState);
+  const {
+    stack,
+    executeName,
+    pushLiteral,
+    startRecording,
+    stopRecording,
+    isRecording,
+  } = useDeleg(initialState);
 
   console.log(stack);
 
@@ -191,6 +240,9 @@ export default function App() {
                 onEnteringMode={() => setEnteringMode(true)}
                 executeName={executeName}
                 pushLiteral={pushLiteral}
+                isRecording={isRecording}
+                startRecording={startRecording}
+                stopRecording={stopRecording}
               />
             </SafeAreaView>
           }
