@@ -7,6 +7,8 @@ import {
   StyleProp,
   KeyboardAvoidingView,
 } from "react-native";
+import { useDeleg } from "./useDeleg";
+import { Word } from "./lib/deleg";
 
 // Must match the app.json androidNavigationBar's background color.
 const KEYPAD_BACKGROUND_COLOR = "#78b9ff";
@@ -58,9 +60,10 @@ const Layout: React.FC<LayoutProps> = ({ display, keypad, style }) => {
 
 interface KeypadProps {
   onEnteringMode: () => void;
+  execute: (word: Word) => void;
 }
 
-const Keypad: React.FC<KeypadProps> = ({ onEnteringMode }) => {
+const Keypad: React.FC<KeypadProps> = ({ onEnteringMode, execute }) => {
   return (
     <View
       style={{
@@ -69,9 +72,24 @@ const Keypad: React.FC<KeypadProps> = ({ onEnteringMode }) => {
         justifyContent: "flex-start",
       }}
     >
-      <Op title="DUP" onPress={() => {}} />
-      <Op title="SWAP" onPress={() => {}} />
-      <Op title="DROP" onPress={() => {}} />
+      <Op
+        title="DUP"
+        onPress={() => {
+          execute("dup");
+        }}
+      />
+      <Op
+        title="SWAP"
+        onPress={() => {
+          execute("swap");
+        }}
+      />
+      <Op
+        title="DROP"
+        onPress={() => {
+          execute("drop");
+        }}
+      />
       <Op title="NUM" onPress={onEnteringMode} />
       <Op title="+" onPress={() => {}} />
       <Op title="*" onPress={() => {}} />
@@ -92,6 +110,9 @@ const Keypad: React.FC<KeypadProps> = ({ onEnteringMode }) => {
 
 export default function App() {
   const [enteringMode, setEnteringMode] = useState(false);
+  const { stack, execute } = useDeleg();
+
+  console.log(stack);
 
   const inputRef = useRef<TextInput>(null);
 
@@ -109,7 +130,10 @@ export default function App() {
               }}
               edges={["bottom"]}
             >
-              <Keypad onEnteringMode={() => setEnteringMode(true)} />
+              <Keypad
+                onEnteringMode={() => setEnteringMode(true)}
+                execute={execute}
+              />
             </SafeAreaView>
           }
         />
@@ -129,7 +153,8 @@ export default function App() {
               autoFocus
               ref={inputRef}
               keyboardType="numeric"
-              onSubmitEditing={() => {
+              onSubmitEditing={(ev) => {
+                execute(parseFloat(ev.nativeEvent.text));
                 inputRef.current?.clear();
                 setEnteringMode(false);
               }}

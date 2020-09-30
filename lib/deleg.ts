@@ -1,11 +1,11 @@
 export type Sym = { name: string };
-type Word = number | string | Sym | Quotation;
-type Quotation = Array<Word>;
+export type Word = number | string | Sym | Quotation;
+export type Quotation = Array<Word>;
 
 export type Value = number | Sym | Quotation;
-type Stack = Array<Value>;
-type Dictionary = { [name: string]: Quotation };
-type State = {
+export type Stack = Array<Value>;
+export type Dictionary = { [name: string]: Quotation };
+export type State = {
   stack: Stack;
   dictionary: Dictionary;
 };

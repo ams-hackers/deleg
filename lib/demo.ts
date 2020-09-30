@@ -12,3 +12,9 @@ const newState = execute(myState, [
   "one-swap",
 ]);
 showStack(newState);
+
+/*
+42 5
+\one-swap {1 swap} def
+one-swap
+*/
