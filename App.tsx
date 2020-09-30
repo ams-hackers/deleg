@@ -8,13 +8,14 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { useDeleg } from "./useDeleg";
+import { State, prelude } from "./lib/deleg";
 
 // Must match the app.json androidNavigationBar's background color.
 const KEYPAD_BACKGROUND_COLOR = "#78b9ff";
 
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
-import { Svg, Circle } from "react-native-svg";
+import { Svg, Rect, Circle, Path, G } from "react-native-svg";
 
 import { Button, ButtonProps } from "./components/Button";
 
@@ -49,6 +50,34 @@ function Display({ stack }: { stack: Array<any> }) {
     </View>
   );
 }
+
+function scale(state: State): State {
+  const factor = state.stack[0];
+  const element = state.stack[1];
+
+  if (typeof factor !== "number") {
+    throw new Error(`Expected number for factor: ${factor}`);
+  }
+
+  if (!React.isValidElement(element)) {
+    throw new Error(`Expected SVG element to scale: ${element}`);
+  }
+
+  const newElem = <G transform={`scale(${factor})`}>{element}</G>;
+
+  return {
+    ...state,
+    stack: [newElem, ...state.stack.slice(2)],
+  };
+}
+
+const initialState: State = {
+  stack: [],
+  dictionary: {
+    ...prelude,
+    scale,
+  },
+};
 
 function Op(props: ButtonProps) {
   return <Button style={[styles.op, props.style]} {...props} />;
@@ -115,7 +144,12 @@ const Keypad: React.FC<KeypadProps> = ({
           );
         }}
       />
-      <Op title="*" onPress={() => {}} />
+      <Op
+        title="Scale"
+        onPress={() => {
+          executeName("scale");
+        }}
+      />
       <Op title="-" onPress={() => {}} />
       <Op title="/" onPress={() => {}} />
       <Op title="NEG" onPress={() => {}} />
@@ -133,7 +167,7 @@ const Keypad: React.FC<KeypadProps> = ({
 
 export default function App() {
   const [enteringMode, setEnteringMode] = useState(false);
-  const { stack, executeName, pushLiteral } = useDeleg();
+  const { stack, executeName, pushLiteral } = useDeleg(initialState);
 
   console.log(stack);
 
