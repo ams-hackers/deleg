@@ -71,11 +71,23 @@ function scale(state: State): State {
   };
 }
 
+function rnd(state: State): State {
+  const range = state.stack[0];
+  if (typeof range !== "number") {
+    throw new Error(`Expected number for range: ${range}`);
+  }
+  return {
+    ...state,
+    stack: [Math.random() * range, ...state.stack.slice(1)],
+  };
+}
+
 const initialState: State = {
   stack: [],
   dictionary: {
     ...prelude,
     scale,
+    rnd,
     F1: { type: "quotation", body: [] },
     F2: { type: "quotation", body: [] },
     F3: { type: "quotation", body: [] },
@@ -163,7 +175,12 @@ const Keypad: React.FC<KeypadProps> = ({
       <Op title="/" onPress={() => {}} />
       <Op title="NEG" onPress={() => {}} />
       <Op title="C" onPress={() => {}} />
-      <Op title="RND" onPress={() => {}} />
+      <Op
+        title="RND"
+        onPress={() => {
+          executeName("rnd");
+        }}
+      />
       <Op
         title={isRecording ? "✅" : "⏺"}
         onPress={isRecording ? stopRecording : startRecording}
