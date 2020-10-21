@@ -6,13 +6,14 @@ export type Name = { type: "name"; name: string };
 export type Literal = { type: "literal"; value: Value };
 export type Word = Literal | Name;
 
-type Color = number;
+export type Color = number;
 
 type PrimitiveFunction = (state: State) => State;
 export type Dictionary = { [name: string]: Quotation | PrimitiveFunction };
 export type State = {
   stack: Stack;
   fill: Color;
+  stroke: Color;
   dictionary: Dictionary;
 };
 

@@ -19,7 +19,8 @@ import { Svg, Circle, Rect, G } from "react-native-svg";
 
 import { Button, ButtonProps } from "./components/Button";
 
-function Display({ stack }: { stack: Array<any> }) {
+function Display({ state }: { state: State }) {
+  const { stack } = state;
   return (
     <View style={{ width: "100%", aspectRatio: 1 }}>
       <Svg
@@ -29,6 +30,15 @@ function Display({ stack }: { stack: Array<any> }) {
         style={{ backgroundColor: "lightblue" }}
         viewBox="-100 -100 200 200"
       >
+        <Circle
+          r={5}
+          x={-80}
+          y={-80}
+          fill={colorToString(state.fill)}
+          stroke={colorToString(state.stroke)}
+          strokeWidth={1}
+        />
+
         {/*
         <Rect x="0" y="0" width="100" height="100" fill="#bbb" />
         <Circle cx="50" cy="50" r="30" fill="yellow" />
@@ -89,6 +99,7 @@ function colorToString(color: Color) {
 const initialState: State = {
   stack: [],
   fill: 0xff0000,
+  stroke: 0,
   dictionary: {
     ...prelude,
     scale,
@@ -104,7 +115,7 @@ const initialState: State = {
           cy="0"
           r="10"
           fill={colorToString(state.fill)}
-          stroke="white"
+          stroke={colorToString(state.stroke)}
         />,
         state
       );
@@ -118,7 +129,7 @@ const initialState: State = {
           width={20}
           height={20}
           fill={colorToString(state.fill)}
-          stroke="white"
+          stroke={colorToString(state.stroke)}
         />,
         state
       );
@@ -279,7 +290,7 @@ const Keypad: React.FC<KeypadProps> = ({
 export default function App() {
   const [enteringMode, setEnteringMode] = useState(false);
   const {
-    stack,
+    state,
     executeName,
     pushLiteral,
     startRecording,
@@ -294,7 +305,7 @@ export default function App() {
       <View style={{ flex: 1 }}>
         <Layout
           style={{ flex: 1 }}
-          display={<Display stack={stack} />}
+          display={<Display state={state} />}
           keypad={
             <SafeAreaView
               style={{

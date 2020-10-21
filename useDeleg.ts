@@ -2,7 +2,12 @@ import { useState, useReducer } from "react";
 import { State, Word, executeWord, prelude } from "./lib/deleg";
 
 export function useDeleg(
-  initialState: State = { stack: [], dictionary: prelude }
+  initialState: State = {
+    stack: [],
+    stroke: 0,
+    fill: 0xff0000,
+    dictionary: prelude,
+  }
 ) {
   const [state, execute] = useReducer(executeWord, initialState);
 
@@ -17,6 +22,7 @@ export function useDeleg(
   };
 
   return {
+    state,
     stack: state.stack,
     dictionary: state.dictionary,
     executeName: (name: string) => dispatch({ type: "name", name }),
