@@ -6,10 +6,13 @@ export type Name = { type: "name"; name: string };
 export type Literal = { type: "literal"; value: Value };
 export type Word = Literal | Name;
 
+type Color = number;
+
 type PrimitiveFunction = (state: State) => State;
 export type Dictionary = { [name: string]: Quotation | PrimitiveFunction };
 export type State = {
   stack: Stack;
+  fill: Color;
   dictionary: Dictionary;
 };
 
@@ -59,7 +62,7 @@ export const prelude: Dictionary = {
 };
 
 // core
-const push = (value: Value, state: State): State => ({
+export const push = (value: Value, state: State): State => ({
   ...state,
   stack: [value, ...state.stack],
 });

@@ -8,14 +8,14 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { useDeleg } from "./useDeleg";
-import { State, prelude } from "./lib/deleg";
+import { Color, push, State, prelude } from "./lib/deleg";
 
 // Must match the app.json androidNavigationBar's background color.
 const KEYPAD_BACKGROUND_COLOR = "#78b9ff";
 
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
-import { Svg, Circle, G } from "react-native-svg";
+import { Svg, Circle, Rect, G } from "react-native-svg";
 
 import { Button, ButtonProps } from "./components/Button";
 
@@ -82,8 +82,13 @@ function rnd(state: State): State {
   };
 }
 
+function colorToString(color: Color) {
+  return "#" + color.toString(16).padStart(6, "0");
+}
+
 const initialState: State = {
   stack: [],
+  fill: 0xff0000,
   dictionary: {
     ...prelude,
     scale,
@@ -91,6 +96,43 @@ const initialState: State = {
     F1: { type: "quotation", body: [] },
     F2: { type: "quotation", body: [] },
     F3: { type: "quotation", body: [] },
+
+    circle: (state: State) => {
+      return push(
+        <Circle
+          cx="0"
+          cy="0"
+          r="10"
+          fill={colorToString(state.fill)}
+          stroke="white"
+        />,
+        state
+      );
+    },
+
+    rect: (state: State) => {
+      return push(
+        <Rect
+          x={-10}
+          y={-10}
+          width={20}
+          height={20}
+          fill={colorToString(state.fill)}
+          stroke="white"
+        />,
+        state
+      );
+    },
+
+    green: (state: State) => {
+      return { ...state, fill: 0x00ff00 };
+    },
+    blue: (state: State) => {
+      return { ...state, fill: 0x0000ff };
+    },
+    red: (state: State) => {
+      return { ...state, fill: 0xff0000 };
+    },
   },
 };
 
@@ -160,9 +202,19 @@ const Keypad: React.FC<KeypadProps> = ({
       <Op
         title="Circle"
         onPress={() => {
-          pushLiteral(
-            <Circle cx="0" cy="0" r="10" fill="red" stroke="white" />
-          );
+          executeName("circle");
+        }}
+      />
+      <Op
+        title="Rect"
+        onPress={() => {
+          executeName("rect");
+        }}
+      />
+      <Op
+        title="Green"
+        onPress={() => {
+          executeName("green");
         }}
       />
       <Op
@@ -234,8 +286,6 @@ export default function App() {
     stopRecording,
     isRecording,
   } = useDeleg(initialState);
-
-  console.log(stack);
 
   const inputRef = useRef<TextInput>(null);
 
