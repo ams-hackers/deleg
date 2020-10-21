@@ -6,6 +6,7 @@ import {
   ViewStyle,
   StyleProp,
   KeyboardAvoidingView,
+  Text,
 } from "react-native";
 import { useDeleg } from "./useDeleg";
 import { Color, pop, push, State, prelude } from "./lib/deleg";
@@ -19,44 +20,60 @@ import { Svg, Circle, Rect, G } from "react-native-svg";
 
 import { Button, ButtonProps } from "./components/Button";
 
+function DisplayValue({ value }: { value: any }) {
+  if (React.isValidElement(value)) {
+    return <Canvas>{value}</Canvas>;
+  } else if (typeof value === "number") {
+    return <Text>{value}</Text>;
+  }
+}
+
+const Canvas: React.FC = ({ children }) => {
+  return (
+    <Svg
+      preserveAspectRatio="xMidYMid meet"
+      height="100%"
+      width="100%"
+      style={{ backgroundColor: "lightblue" }}
+      viewBox="-100 -100 200 200"
+    >
+      {children}
+    </Svg>
+  );
+};
+
 function Display({ state }: { state: State }) {
-  const { stack } = state;
+  const [tosView, setTosView] = useState(false);
   return (
     <View style={{ width: "100%", aspectRatio: 1 }}>
-      <Svg
-        preserveAspectRatio="xMidYMid meet"
-        height="100%"
-        width="100%"
-        style={{ backgroundColor: "lightblue" }}
-        viewBox="-100 -100 200 200"
-      >
-        <Circle
-          r={5}
-          x={-80}
-          y={-80}
-          fill={colorToString(state.fill)}
-          stroke={colorToString(state.stroke)}
-          strokeWidth={1}
-        />
+      <View style={{ flexDirection: "row", height: 30 }}>
+        <Button onPress={() => setTosView(true)} title="TOS" />
+        <Button onPress={() => setTosView(false)} title="Stack" />
+      </View>
 
-        {/*
-        <Rect x="0" y="0" width="100" height="100" fill="#bbb" />
-        <Circle cx="50" cy="50" r="30" fill="yellow" />
-        <Circle cx="40" cy="40" r="4" fill="black" />
-        <Circle cx="60" cy="40" r="4" fill="black" />
-        <Path d="M 40 60 A 10 10 0 0 0 60 60" stroke="black" />
-        */}
+      <View
+        style={{
+          borderColor: colorToString(state.stroke),
+          backgroundColor: colorToString(state.fill),
+          width: 10,
+          height: 10,
+        }}
+      />
 
-        {React.Children.map(
-          stack
-            .slice(0)
-            .reverse()
-            .filter((value) => React.isValidElement(value)),
-          (elem, ix) => (
-            <React.Fragment key={ix}>{elem}</React.Fragment>
-          )
-        )}
-      </Svg>
+      {tosView ? (
+        <DisplayValue value={state.stack[0]} />
+      ) : (
+        state.stack
+          .slice(0)
+          .reverse()
+          .map((item, ix) => {
+            return (
+              <View key={ix} style={{ height: 40 }}>
+                <DisplayValue value={item} />
+              </View>
+            );
+          })
+      )}
     </View>
   );
 }
