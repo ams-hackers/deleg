@@ -279,10 +279,6 @@ const Keypad: React.FC<KeypadProps> = ({
           executeName("scale");
         }}
       />
-      <Op title="-" onPress={() => {}} />
-      <Op title="/" onPress={() => {}} />
-      <Op title="NEG" onPress={() => {}} />
-      <Op title="C" onPress={() => {}} />
       <Op
         title="RND"
         onPress={() => {
@@ -326,8 +322,6 @@ const Keypad: React.FC<KeypadProps> = ({
           executeName("def");
         }}
       />
-      <Op title="UNDO" onPress={() => {}} />
-      <Op title="REDO" onPress={() => {}} />
     </View>
   );
 };
