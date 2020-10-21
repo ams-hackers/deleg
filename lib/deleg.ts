@@ -33,6 +33,10 @@ const drop = (state: State): State => ({
   stack: state.stack.slice(1),
 });
 
+export const pop = (state: State): [Value, State] => {
+  return [state.stack[0], drop(state)];
+};
+
 const def = (state: State): State => {
   const name = state.stack[1];
   const body = state.stack[0];

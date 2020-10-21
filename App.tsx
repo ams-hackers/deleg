@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { useDeleg } from "./useDeleg";
-import { Color, push, State, prelude } from "./lib/deleg";
+import { Color, pop, push, State, prelude } from "./lib/deleg";
 
 // Must match the app.json androidNavigationBar's background color.
 const KEYPAD_BACKGROUND_COLOR = "#78b9ff";
@@ -136,13 +136,28 @@ const initialState: State = {
     },
 
     green: (state: State) => {
-      return { ...state, fill: 0x00ff00 };
+      return push(0x00ff00, state);
     },
     blue: (state: State) => {
-      return { ...state, fill: 0x0000ff };
+      return push(0x0000ff, state);
     },
     red: (state: State) => {
-      return { ...state, fill: 0xff0000 };
+      return push(0xff0000, state);
+    },
+
+    setStroke: (state: State) => {
+      const [color, newstate] = pop(state);
+      return {
+        ...newstate,
+        stroke: color,
+      };
+    },
+    setFill: (state: State) => {
+      const [color, newstate] = pop(state);
+      return {
+        ...newstate,
+        fill: color,
+      };
     },
   },
 };
@@ -228,6 +243,19 @@ const Keypad: React.FC<KeypadProps> = ({
           executeName("green");
         }}
       />
+      <Op
+        title="set fill"
+        onPress={() => {
+          executeName("setFill");
+        }}
+      />
+      <Op
+        title="set stroke"
+        onPress={() => {
+          executeName("setStroke");
+        }}
+      />
+
       <Op
         title="Scale"
         onPress={() => {
